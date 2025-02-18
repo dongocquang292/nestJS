@@ -1,24 +1,15 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { TaskModule } from './task/task.module';
-
+import { UserModule } from './modules/users/user.module';
+import { BookModule } from './modules/books/book.module';
+import { ProtectedModule } from './modules/auth/protected/protected.module';
+import { dataSourceOptions } from 'db/data-source';
 @Module({
   imports: [
-    TypeOrmModule.forRoot({
-      type: 'mysql',
-      host: 'localhost',
-      port: 3306,
-      username: 'quangdn',
-      password: '123456',
-      database: 'nestjs',
-      synchronize: true,
-      entities: [__dirname + '/**/*.entity{.ts,.js}'],
-    }),
-    TaskModule,
-  ],
-  controllers: [AppController],
-  providers: [AppService],
+    TypeOrmModule.forRoot(dataSourceOptions), 
+    UserModule,
+    BookModule, 
+    ProtectedModule
+    ],
 })
 export class AppModule {}
