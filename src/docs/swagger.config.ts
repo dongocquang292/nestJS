@@ -10,19 +10,17 @@ interface ISwaggerConfig {
 }
 
 export const SWAGGER_CONFIG: ISwaggerConfig = {
-  title: 'App title',
-  description: 'App description',
+  title: 'Management Books Nestjs',
+  description: 'Management Books Nestjs API doc',
   version: 'neutral',
   apiKey: {
     type: 'apiKey',
-    name: 'Authorization',
-    description: 'Enter token',
-    scheme: 'Bearer',
-    in: 'Header',
+    name: 'Authorization-Url-Params',
+    description: 'enter token',
   },
   apiKeyName: 'token',
 };
 
 export const swaggerOptions: SwaggerCustomOptions = {
-  customSiteTitle: 'App API Document',
+  customSiteTitle: 'Management Books API Document',
 };

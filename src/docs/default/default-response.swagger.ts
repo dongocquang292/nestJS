@@ -1,4 +1,4 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty } from "@nestjs/swagger";
 
 export class BadRequestResponse {
   //@example 400
@@ -38,19 +38,41 @@ export class InternalServerErrorResponse {
   error?: string;
 }
 
-export class DefaultResponse {
-  //Response status code
-  @ApiProperty({ example: 200 })
-  status: number;
+export class UnprocessableEntityResponse {
+  //@example 422
+  statusCode: number;
 
-  //Response message
+  message?: string;
+
+  //@example "Unprocessable Entity"
+  error?: string;
+}
+
+export class DefaultResponse {
+  //Response code
+  @ApiProperty()
+  code: number;
+
+  //Response status message
+  @ApiProperty()
+  status?: string;
+
+  //Optional message
   @ApiProperty()
   message?: string;
 }
 
-export class DefaultPaginationResponse {
-  currentPage: number;
-  perPage: number;
-  totalPage: number;
-  totalResult: number;
+export class DefaultMetaResponse {
+  pagination: {
+    count: number;
+    current_page: number;
+    links?: any;
+    per_page: number;
+    total: number;
+    total_pages: number;
+  };
+}
+
+export class DefaultPaginationResponse extends DefaultResponse {
+  meta: DefaultMetaResponse;
 }

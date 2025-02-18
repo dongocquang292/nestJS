@@ -1,19 +1,9 @@
-import {
-  Injectable,
-  NotFoundException,
-  InternalServerErrorException,
-  BadRequestException,
-} from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from './entities/users.entity';
-import { UserDto } from './dto/user.dto';
-import {
-  CreateUserResponse,
-  GetAllUsersResponse,
-  GetUserInfoResponse,
-  UpdateUserResponse,
-} from './response/user.response';
+import { CreateUserDto, UpdateUserDto } from './dto/user.dto';
+import { CreateUserResponse, GetAllUsersResponse, GetUserInfoResponse, UpdateUserResponse } from './response/user.response';
 import { DefaultResponse } from 'src/docs/default/default-response.swagger';
 @Injectable()
 export class UserService {
@@ -22,19 +12,17 @@ export class UserService {
     private readonly userRepo: Repository<User>,
   ) {}
 
-  async create(createUserDto: UserDto): Promise<CreateUserResponse> {
+  async create(payload: CreateUserDto): Promise<CreateUserResponse> {
     try {
       const userExists = await this.userRepo.findOne({
-        where: { email: createUserDto.email },
+        where: { email: payload.email },
       });
-      if (userExists) {
-        throw new BadRequestException('User already exists');
-      }
-      const user = await this.userRepo.save(createUserDto);
-      return { status: 200, message: 'User created successfully', data: user };
+      if (userExists) throw new BadRequestException('User already exists');
+      const user = await this.userRepo.save(payload);
+      return { code: 200, status: 'success', data: user };
     } catch (error) {
       console.error('Error creating the user:', error.message);
-      return { status: 400, message: 'Error creating the user', data: null };
+      return { code: 400, status: 'error', data: null };
     }
   }
 
@@ -42,13 +30,13 @@ export class UserService {
     try {
       const users = await this.userRepo.find({ relations: ['books'] });
       return {
-        status: 200,
-        message: 'Users retrieved successfully',
+        code: 200,
+        status: 'success',
         data: users,
       };
     } catch (error) {
       console.error('Error retrieving the users:', error.message);
-      return { status: 400, message: 'Error retrieving the users', data: [] };
+      return { code: 400, status: 'error', data: [] };
     }
   }
 
@@ -60,30 +48,30 @@ export class UserService {
       });
       if (!user) throw new NotFoundException(`User with ID ${id} not found`);
       return {
-        status: 200,
-        message: 'User retrieved successfully',
+        code: 200,
+        status: 'success',
         data: user,
       };
     } catch (error) {
       console.error('Error retrieving the user:', error.message);
-      return { status: 400, message: 'Error retrieving the user', data: null };
+      return { code: 400, status: 'error', data: null };
     }
   }
 
-  async update(id: number, payload: UserDto): Promise<UpdateUserResponse> {
+  async update(id: number, payload: UpdateUserDto): Promise<UpdateUserResponse> {
     try {
       const user = await this.userRepo.findOne({ where: { id } });
       if (!user) throw new NotFoundException(`User with ID ${id} not found`);
       const updatedUser = this.userRepo.merge(user, payload);
       const savedUser = await this.userRepo.save(updatedUser);
       return {
-        status: 200,
-        message: 'User updated successfully',
+        code: 200,
+        status: 'success',
         data: savedUser,
       };
     } catch (error) {
       console.error('Error updating the user:', error.message);
-      return { status: 400, message: 'Error updating the user', data: null };
+      return { code: 400, status: 'error', data: null };
     }
   }
 
@@ -94,10 +82,10 @@ export class UserService {
         throw new NotFoundException(`User with ID ${id} not found`);
       }
       await this.userRepo.remove(user);
-      return { status: 200, message: 'User deleted successfully' };
+      return { code: 200, status: 'success' };
     } catch (error) {
       console.error('Error deleting the user:', error.message);
-      return { status: 400, message: 'Error deleting the user' };
+      return { code: 400, status: 'error' };
     }
   }
 }
